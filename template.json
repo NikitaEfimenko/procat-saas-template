@@ -1,0 +1,12 @@
+{
+  "package": {
+    "name": "saas-procat-template",
+    "version": "1.0.0",
+    "description": "Procat SaaS template",
+    "dependencies": {},
+    "devDependencies": {}
+  },
+  "scripts": {
+    "postinstall": "echo 'Procat SaaS template installed!'"
+  }
+}

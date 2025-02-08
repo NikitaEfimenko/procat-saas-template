@@ -5,6 +5,8 @@ import { auth } from "./auth"
 import { SignIn, SignOut } from "./signin"
 import Link from "next/link"
 
+export const revalidate = 0;
+
 const config = {
   expiredFallback: <Link className="flex items-center gap-2" href={`${process.env.PROCAT_ID_HOST!}/clients/to/${process.env.PROCAT_CLIENT_ID!}`}>
     <span>

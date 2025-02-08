@@ -25,13 +25,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         console.log(account)
         token.accessToken = account.access_token;
       }
-      console.log(profile, "profile")
+      console.log(profile, "in jwt")
       return token
     },
     
-    async session({ session, token }) {
+    async session({ session, token, user }) {
       if (token) {
         console.log(token, "is_token_session")
+        console.log(user, "is user in session")
         // @ts-ignore
         session.user = {...token.user, ...(token?.subsciptions ?? {}), ...session.user, accessToken: token.accessToken, userId: session.userId }
       }

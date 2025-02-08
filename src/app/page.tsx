@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { Content } from "./content";
 
+export const revalidate = 0;
+
 export default function Home() {
 
   return (

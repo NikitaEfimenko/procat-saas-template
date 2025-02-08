@@ -33,8 +33,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (token) {
         console.log(token, "is_token_session")
         console.log(user, "is user in session")
+        let userProfile = {}
+        try {
+          userProfile = await fetch(`${process.env.PROCAT_ID_HOST}/users/userinfo`, {
+            headers: { Authorization: `Bearer ${token.accessToken}` }
+          }).then(res => res.json());
+        }
+        catch {
+          userProfile = {}
+        }
+        console.log(userProfile, "is new profile")
         // @ts-ignore
-        session.user = {...token.user, ...(token?.subsciptions ?? {}), ...session.user, accessToken: token.accessToken, userId: session.userId }
+        session.user = {...token.user, ...(userProfile ?? {}), ...session.user, accessToken: token.accessToken, userId: session.userId }
       }
       return session
     }

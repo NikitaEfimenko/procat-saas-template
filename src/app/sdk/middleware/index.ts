@@ -42,7 +42,7 @@ export const getRateLimiter = async (conf?: LimiterConfig) => {
 }
 
 
-export const withWebhook = async(handler: AppRouteHandlers["POST"]) => {
+export const withWebhook = (handler: AppRouteHandlers["POST"]) => {
   const middleware: AppRouteHandlers["POST"] =  async (req: NextRequest) => {
     if (req.method !== "POST") return NextResponse.json({}, { status: 405 });
 

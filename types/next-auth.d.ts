@@ -1,6 +1,6 @@
 import NextAuth, { DefaultSession } from 'next-auth';
 
-type TSubscription = {
+export type TSubscription = {
   isActive: boolean
   levelName: string
   price: number
@@ -9,7 +9,7 @@ type TSubscription = {
   endDate: string
 }
 
-interface TUser extends DefaultSession['user'] {
+export interface TUser extends DefaultSession['user'] {
   username: string;
   image: string;
   subscriptions: TSubscription[],
@@ -19,6 +19,7 @@ interface TUser extends DefaultSession['user'] {
 declare module 'next-auth' {
     interface Session {
       user: TUser,
+      token: JWT
     }
 }
 declare module 'next-auth/jwt' {

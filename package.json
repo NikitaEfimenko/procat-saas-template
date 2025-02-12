@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@next/env": "^15.1.6",
+    "lru-cache": "^11.0.2",
     "next": "15.1.4",
     "next-auth": "5.0.0-beta.22",
     "react": "^19.0.0",

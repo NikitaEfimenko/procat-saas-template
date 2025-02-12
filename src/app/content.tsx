@@ -1,4 +1,4 @@
-import { getSubExpires, Guard } from "@/app/sdk"
+import { getSubExpires, Guard, SubscriptionsLevelList } from "@/app/sdk"
 import Image from "next/image"
 import { ComponentProps, Suspense } from "react"
 import { auth } from "./auth"
@@ -70,6 +70,11 @@ export const Content = async () => {
               Secret content full for {getSubExpires(session, "grand_all").toLocaleString()}
             </div>
           </Guard>
+        </Suspense>
+      </section>
+      <section>
+        <Suspense fallback={<p>loading...</p>}>
+          <SubscriptionsLevelList/>
         </Suspense>
       </section>
     </section>

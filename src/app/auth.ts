@@ -1,7 +1,8 @@
 import NextAuth from "next-auth";
 import { Procat } from "@/app/sdk/procat-auth-provider";
+import { instance } from "@/app//sdk/api";
 
- 
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
   useSecureCookies: false,
@@ -18,33 +19,36 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return !!auth
     },
     async jwt({ token, user, profile, account }) {
+      console.log(token, account)
+      const now = Math.floor(Date.now() / 1000);
       if (profile) {
         token.user = profile
       }
       if (account) {
-        console.log(account)
         token.accessToken = account.access_token;
+        token.refreshToken = account.refresh_token;
+        token.expiresAt = account.expires_at;
       }
-      console.log(profile, "in jwt")
-      return token
+      if (token.expiresAt && now < (token.expiresAt as number)) {
+        return token;
+      }
+      instance.injectToken(token)
+      return await instance.switchToken()
     },
-    
+
     async session({ session, token, user }) {
       if (token) {
-        console.log(token, "is_token_session")
-        console.log(user, "is user in session")
+        instance.injectToken(token)
         let userProfile = {}
         try {
-          userProfile = await fetch(`${process.env.PROCAT_ID_HOST}/users/userinfo`, {
-            headers: { Authorization: `Bearer ${token.accessToken}` }
-          }).then(res => res.json());
+          userProfile = await instance.fetchProfile()
         }
         catch {
           userProfile = {}
         }
         console.log(userProfile, "is new profile")
         // @ts-ignore
-        session.user = {...token.user, ...(userProfile ?? {}), ...session.user, accessToken: token.accessToken, userId: session.userId }
+        session.user = { token, ...token.user, ...(userProfile ?? {}), ...session.user, accessToken: token.accessToken, userId: session.userId }
       }
       return session
     }

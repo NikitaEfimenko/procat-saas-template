@@ -33,7 +33,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return token;
       }
       instance.injectToken(token)
-      return await instance.switchToken()
+      try {
+        return await instance.switchToken()
+      } catch {
+        return token
+      }
     },
 
     async session({ session, token, user }) {

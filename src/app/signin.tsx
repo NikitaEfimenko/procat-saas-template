@@ -22,7 +22,7 @@ export function SignOut() {
         await signOut()
       }}
     >
-      <button className="py-2 px-4 border border-white" type="submit">logout</button>
+      <button className="py-2 px-4 border border-white" type="submit">Logout</button>
     </form>
   )
 }

@@ -19,7 +19,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return !!auth
     },
     async jwt({ token, user, profile, account }) {
-      console.log(token, account)
       const now = Math.floor(Date.now() / 1000);
       if (profile) {
         token.user = profile
@@ -50,9 +49,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         catch {
           userProfile = {}
         }
-        console.log(userProfile, "is new profile")
         // @ts-ignore
-        session.user = { token, ...token.user, ...(userProfile ?? {}), ...session.user, accessToken: token.accessToken, userId: session.userId }
+        session.user = { ...token.user, ...(userProfile ?? {}), ...session.user, accessToken: token.accessToken, userId: session.userId }
+        session.token = token
       }
       return session
     }

@@ -1,23 +1,11 @@
-import { getSubExpires, Guard, SubscriptionsLevelList } from "@/app/sdk"
+import { getSubExpires, Guard, fallbackConfig } from "@/app/sdk"
 import Image from "next/image"
-import { ComponentProps, Suspense } from "react"
+import { Suspense } from "react"
 import { auth } from "./auth"
 import { SignIn, SignOut } from "./signin"
-import Link from "next/link"
 
 export const revalidate = 0;
 
-const config = {
-  expiredFallback: <Link className="flex items-center gap-2" href={`${process.env.PROCAT_ID_HOST!}/clients/to/${process.env.PROCAT_CLIENT_ID!}`}>
-    <span>
-      Expired
-    </span>
-    <button className="py-2 px-4 border border-white" type="submit">
-      Update sub with Procat
-    </button>
-  </Link>,
-  noAccessFallback: <p>not access - you dont have subscriptions</p>
-}
 
 type ContentItemProps = {
   url: string
@@ -48,7 +36,7 @@ export const Content = async () => {
       <SignOut />
       <section className="border p-4 border-white">
         <Suspense fallback={<p>loading...</p>}>
-          <Guard level="grand_simple" {...config}>
+          <Guard level="grand_simple" {...fallbackConfig}>
             <div className="p-4 border border-white">
               <ContentItem type="video" url="https://media.vlipsy.com/vlips/mUveS7b3/360p.mp4" />
               Secret content simple for {getSubExpires(session, "grand_simple").toLocaleString()}
@@ -56,7 +44,7 @@ export const Content = async () => {
           </Guard>
         </Suspense>
         <Suspense fallback={<p>loading...</p>}>
-          <Guard level="grand_middle" {...config}>
+          <Guard level="grand_middle" {...fallbackConfig}>
             <div className="p-4 border border-white">
               <ContentItem type="video" url="https://media.vlipsy.com/vlips/5A7qVpH3/360p.mp4" />
               Secret content middle for {getSubExpires(session, "grand_middle").toLocaleString()}
@@ -64,17 +52,12 @@ export const Content = async () => {
           </Guard>
         </Suspense>
         <Suspense fallback={<p>loading...</p>}>
-          <Guard level="grand_all" {...config}>
+          <Guard level="grand_all" {...fallbackConfig}>
             <div className="p-4 border border-white">
               <ContentItem type="video" url="https://media.vlipsy.com/vlips/tVmiYVBz/360p.mp4" />
               Secret content full for {getSubExpires(session, "grand_all").toLocaleString()}
             </div>
           </Guard>
-        </Suspense>
-      </section>
-      <section>
-        <Suspense fallback={<p>loading...</p>}>
-          <SubscriptionsLevelList/>
         </Suspense>
       </section>
     </section>

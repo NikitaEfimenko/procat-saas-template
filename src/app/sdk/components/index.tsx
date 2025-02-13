@@ -1,9 +1,10 @@
 
 import { auth } from "@/app/auth"
 import { ReactNode } from "react"
-import { checkAccess, nullguard } from "../helpers"
+import { checkAccess, nullguard, AccessStatus } from "../helpers"
 import { instance } from "../api"
-import { getToken } from "next-auth/jwt"
+import Link from "next/link"
+
 
 export type TGuardProps = {
   level: string,
@@ -11,6 +12,7 @@ export type TGuardProps = {
   expiredFallback: ReactNode,
   noAccessFallback: ReactNode
 }
+
 export const Guard = async ({ level, children, expiredFallback, noAccessFallback }: TGuardProps) => {
   const session = await auth()
   if (!session?.user) return null
@@ -27,16 +29,64 @@ export const Guard = async ({ level, children, expiredFallback, noAccessFallback
   })
 }
 
+type NavigateToProcatClientProps = {
+  status: AccessStatus
+}
+
+export const NavigateToProcatClient = ({
+  status
+}: NavigateToProcatClientProps) => {
+  return <Link className="flex items-center gap-2" href={`${process.env.PROCAT_ID_HOST!}/clients/to/${process.env.PROCAT_CLIENT_ID!}`}>
+    <span>
+      {status}
+    </span>
+    <button className="py-2 px-4 border border-white" type="submit">
+      {status === "no-access" ? "Subscribe" : "Resubscribe"} with Procat
+    </button>
+  </Link>
+}
+
+export const NoAccessFallback = () => {
+  return <div className="flex flex-col gap-2">
+    <p>not access - you don't have subscriptions</p>
+    <NavigateToProcatClient status="no-access"/>
+  </div>
+}
+
+export const fallbackConfig = {
+  expiredFallback: <NavigateToProcatClient status="expired"/>,
+  noAccessFallback: <NoAccessFallback/>
+}
+
+type SubscriptionLevel = {
+  id: string,
+  levelName: string,
+  description: string,
+  price: number | string,
+  durationMinutes: number | string
+}
+
 export const SubscriptionsLevelList = async () => {
   const session = await auth()
   if (!session?.user) {
     return null
   }
   instance.injectToken(session.token)
-  const levelsList: Array<any> = await instance.fetchSubscriptionsLevels()
-  return <div className="flex items-center gap-3">
-    {levelsList.map(el => <div className="p-4 border rounded-lg">{JSON.stringify(el)}</div>)}
-  </div>
+  const levelsList: Array<SubscriptionLevel> = await instance.fetchSubscriptionsLevels()
+  return <>
+    {levelsList.map(el => <div className="p-4 border rounded-lg">
+      <div key={el.id} className="flex flex-col gap-2">
+        <p className="text-lg">{el.levelName}</p>
+        <p className="text-md">{el.description}</p>
+        <div className="text-xs">
+          <span>{el.price}</span>/<span>{el.durationMinutes}min</span>
+        </div>
+        <div className="border-t"></div>
+        <Guard level={el.levelName} {...fallbackConfig}>
+          <NavigateToProcatClient status="no-access"/>
+        </Guard>
+      </div>
+    </div>)}
+  </>
 }
-
 

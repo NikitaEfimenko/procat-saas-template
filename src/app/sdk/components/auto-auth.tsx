@@ -23,8 +23,8 @@ export const AutoAuth = ({
         setLoading(false)
       }
     }
-    
-    if (status === "unauthenticated" || status === "loading") {
+    console.log(status)
+    if (!status || status === "unauthenticated" || status === "loading") {
       trySignIn()
     } else {
       setLoading(false)

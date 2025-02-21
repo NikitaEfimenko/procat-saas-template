@@ -2,6 +2,7 @@
 import { signIn, useSession } from "next-auth/react"
 import { ReactNode, useEffect, useState } from "react"
 
+
 type AuthAuthProps = {
   loader?: ReactNode
 }
@@ -11,12 +12,13 @@ export const AutoAuth = ({
 }: AuthAuthProps) => {
   const [loading, setLoading] = useState(true)
   const { status } = useSession();
+  const [text, setText] = useState("")
 
-  console.log(status, "status")
   useEffect(() => {
     const trySignIn = async () => {
       const webapp = (window as any)?.Telegram?.WebApp
       console.log(webapp?.initData, "initData")
+      setText(`${webapp?.initData, "initData"}`)
       try{
         if (webapp && webapp?.initData) {
           await signIn('procat', undefined, webapp.initData)
@@ -26,6 +28,7 @@ export const AutoAuth = ({
       }
     }
     console.log(status, "status")
+    setText(`${status} initData`)
     if (!status || status === "unauthenticated" || status === "loading") {
       trySignIn()
     } else {
@@ -37,7 +40,10 @@ export const AutoAuth = ({
     return null;
   }
 
-  return loading ? <div className="bg-black w-full h-full z-50 absolute flex flex-col items-center justify-center">
+  return <>
+  <p className="text-xl text-red-800">{text}</p>
+  {loading ? <div className="bg-black w-full h-full z-50 absolute flex flex-col items-center justify-center">
     {loader}
-  </div> : null
+  </div> : null}
+  </>
 }

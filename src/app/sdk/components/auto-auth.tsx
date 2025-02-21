@@ -13,16 +13,13 @@ export const AutoAuth = ({
 }: AuthAuthProps) => {
   const [loading, setLoading] = useState(true)
   const { status } = useSession();
-  
-  const [text, setText] = useState("")
+
 
   useEffect(() => {
     const trySignIn = async () => {
       let initData = getInitDataFromUrl();
 
       console.log(initData, "initData");
-
-      setText(initData ? `InitData found: ${initData}` : "No initData");
 
       try {
         if (initData) {
@@ -34,20 +31,20 @@ export const AutoAuth = ({
       }
     };
     console.log(status, "status")
-    setText(`${status} status`)
-    if (!status || status === "unauthenticated" || status === "loading") {
+    if (status === "unauthenticated") {
+      setLoading(true)
       trySignIn()
     } else {
       setLoading(false)
     }
-  }, [])
+  }, [status])
 
   if (status === "authenticated") {
     return null;
   }
 
   return <>
-  <p className="text-xl text-red-800">{text}</p>
+  {/* <p className="text-xl text-red-800">{text}</p> */}
   {loading ? <div className="bg-black w-full h-full z-50 absolute flex flex-col items-center justify-center">
     {loader}
   </div> : null}

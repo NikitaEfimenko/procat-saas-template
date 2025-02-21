@@ -11,17 +11,24 @@ export const AutoAuth = ({
 }: AuthAuthProps) => {
   const [loading, setLoading] = useState(true)
   const { status } = useSession();
-  console.log(status, "is status")
   useEffect(() => {
     const trySignIn = async () => {
       const webapp = (window as any)?.Telegram?.WebApp
-      console.log(webapp?.initData, "init_data", status)
-      if (webapp && webapp?.initData && status === "unauthenticated") {
-        await signIn('procat', undefined, webapp.initData)
+      console.log(webapp?.initData, "initData")
+      try{
+        if (webapp && webapp?.initData) {
+          await signIn('procat', undefined, webapp.initData)
+        }
+      } finally {
+        setLoading(false)
       }
+    }
+    
+    if (status === "unauthenticated" || status === "loading") {
+      trySignIn()
+    } else {
       setLoading(false)
     }
-    trySignIn()
   }, [status])
 
   if (status === "authenticated") {

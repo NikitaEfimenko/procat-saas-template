@@ -11,6 +11,8 @@ export const AutoAuth = ({
 }: AuthAuthProps) => {
   const [loading, setLoading] = useState(true)
   const { status } = useSession();
+
+  console.log(status, "status")
   useEffect(() => {
     const trySignIn = async () => {
       const webapp = (window as any)?.Telegram?.WebApp
@@ -23,7 +25,7 @@ export const AutoAuth = ({
         setLoading(false)
       }
     }
-    console.log(status)
+    console.log(status, "status")
     if (!status || status === "unauthenticated" || status === "loading") {
       trySignIn()
     } else {

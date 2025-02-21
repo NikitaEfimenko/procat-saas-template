@@ -40,7 +40,7 @@ export const AutoAuth = ({
     } else {
       setLoading(false)
     }
-  }, [status])
+  }, [])
 
   if (status === "authenticated") {
     return null;

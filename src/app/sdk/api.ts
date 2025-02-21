@@ -40,21 +40,27 @@ class ProcatAPI {
   public async switchToken() {
     if (!this.token) throw new Error("No token")
     try {
-      const response = await fetch(`${this.host}/refresh-token`, {
+      const response = await fetch(`${this.host}/auth/token`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refresh_token: this.token.refreshToken }),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${this.token.accessToken}`
+        },
+        body: JSON.stringify({
+          refresh_token: this.token.refreshToken,
+          grant_type: 'refresh_token',
+          client_id: this.clientId
+        }),
       });
-  
       if (!response.ok) throw new Error("Failed to refresh token");
-  
+
       const refreshedTokens = await response.json();
-  
+
       return {
         ...this.token,
-        accessToken: refreshedTokens.access_token,
-        refreshToken: refreshedTokens.refresh_token ?? this.token.refreshToken, // Если refresh_token не поменялся
-        accessTokenExpires: Math.floor(Date.now() / 1000) + refreshedTokens.expires_in,
+        accessToken: refreshedTokens.accessToken,
+        refreshToken: refreshedTokens.refreshToken ?? this.token.refreshToken, // Если refresh_token не поменялся
+        accessTokenExpires: Math.floor(Date.now() / 1000) + refreshedTokens.expiresIn,
       };
     } catch (error) {
       console.error("Error refreshing access token", error);

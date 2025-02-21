@@ -1,6 +1,7 @@
 'use client'
 import { signIn, useSession } from "next-auth/react"
 import { ReactNode, useEffect, useState } from "react"
+import { getInitDataFromUrl } from "../helpers"
 
 
 type AuthAuthProps = {
@@ -12,23 +13,28 @@ export const AutoAuth = ({
 }: AuthAuthProps) => {
   const [loading, setLoading] = useState(true)
   const { status } = useSession();
+  
   const [text, setText] = useState("")
 
   useEffect(() => {
     const trySignIn = async () => {
-      const webapp = (window as any)?.Telegram?.WebApp
-      console.log(webapp?.initData, "initData")
-      setText(`${webapp?.initData, "initData"}`)
-      try{
-        if (webapp && webapp?.initData) {
-          await signIn('procat', undefined, webapp.initData)
+      let initData = getInitDataFromUrl();
+
+      console.log(initData, "initData");
+
+      setText(initData ? `InitData found: ${initData}` : "No initData");
+
+      try {
+        if (initData) {
+          // Тут ты можешь вызвать свою функцию авторизации
+          await signIn('procat', undefined, initData);
         }
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
     console.log(status, "status")
-    setText(`${status} initData`)
+    setText(`${status} status`)
     if (!status || status === "unauthenticated" || status === "loading") {
       trySignIn()
     } else {

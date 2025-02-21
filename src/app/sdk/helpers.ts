@@ -21,3 +21,30 @@ export function nullguard<V>(v: V, render: (v: NonNullable<V>) => React.ReactNod
   if (Array.isArray(v) && !v.length) return null;
   return render(v);
 }
+
+export const getInitDataFromUrl = (): string | null => {
+  let initData = (window as any)?.Telegram?.WebApp?.initData;
+
+  if (!initData) {
+    const params = new URLSearchParams(window.location.search);
+    initData = params.get('initData');
+    
+    if (initData) {
+      initData = decodeURIComponent(initData);
+    }
+  }
+
+  return initData;
+};
+
+export const extendWithInitData = (url: string): string => {
+  const webapp = (window as any)?.Telegram?.WebApp;
+  let initData = webapp?.initData;
+  if (initData) {
+    const encodedInitData = encodeURIComponent(initData);
+    const urlObj = new URL(url);
+    urlObj.searchParams.set('initData', encodedInitData);
+    return urlObj.toString();
+  }
+  return url;
+};
